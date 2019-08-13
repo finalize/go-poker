@@ -34,7 +34,6 @@ func (deck *Deck) Shuffle() *Deck {
 		deck.cards[i] = deck.cards[int(j)]
 		deck.cards[int(j)] = swap
 	}
-
 	return deck
 }
 
