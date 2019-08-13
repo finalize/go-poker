@@ -41,3 +41,11 @@ func (deck *Deck) Shuffle() *Deck {
 
 	return deck
 }
+
+func (deck *Deck) Deal() func() map[string]int {
+	i := 0
+	return func() map[string]int {
+		i++
+		return deck.cards[i]
+	}
+}
