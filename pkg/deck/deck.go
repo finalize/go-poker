@@ -1,7 +1,6 @@
 package deck
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 )
@@ -28,7 +27,6 @@ func (deck *Deck) New() *Deck {
 
 // Shuffle デッキを初期化
 func (deck *Deck) Shuffle() *Deck {
-	//fmt.Println(d)
 	for i := range deck.cards {
 		rand.Seed(time.Now().UnixNano())
 		var j = rand.Float32() * float32(i+1)
@@ -36,8 +34,6 @@ func (deck *Deck) Shuffle() *Deck {
 		deck.cards[i] = deck.cards[int(j)]
 		deck.cards[int(j)] = swap
 	}
-
-	fmt.Println(len(deck.cards))
 
 	return deck
 }
