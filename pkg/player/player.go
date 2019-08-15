@@ -4,13 +4,17 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 // Player プレイヤーの情報
 type Player struct {
 	Name   string
 	Hand   []map[string]int
+	Pot    int
 	Status string
+	Chip   int
+	Bet    int
 }
 
 // SetHand 手札をセット
@@ -20,40 +24,60 @@ func (p *Player) SetHand(hand map[string]int) *Player {
 }
 
 // Action アクションを分岐
-func (p *Player) Action() {
+func (p *Player) Action(pot *int) string {
 	fmt.Println(p.Name + " is playing")
-	fmt.Println("*** Check: 0 Call: 1 Bet: 2 Raise: 3 ***")
-	fmt.Println("----- Your hand -----")
-	for i := range p.Hand {
-		for k, v := range p.Hand[i] {
-			fmt.Printf("%s %d\n", k, v)
-		}
-	}
-	fmt.Println("----- Your hand -----")
+	fmt.Println("----- Pot -----")
+	fmt.Println(*pot)
+	fmt.Println("----- Pot -----")
 	scanner := bufio.NewScanner(os.Stdin)
-	fmt.Println("Status:" + p.Status)
+
 	for scanner.Scan() {
 		t := scanner.Text()
 
-		switch t {
-		case "1":
-			check(p)
-		case "2":
-			call()
-		case "3":
-			bet()
-		case "4":
-			raise()
-		default:
-			fmt.Println("Enter the number")
-		}
-		if p.Status != "" {
-			break
+		if p.Bet < *pot {
+			switch t {
+			case "2":
+				call(p, pot)
+			case "4":
+				raise()
+			case "5":
+				fold(p)
+			default:
+				fmt.Println("Enter the number")
+				continue
+			}
+			if p.Status != "" {
+				break
+			}
+		} else {
+			switch t {
+			case "1":
+				check(p)
+			case "2":
+				call(p, pot)
+			case "3":
+				fmt.Println("Enter bet sizes")
+				scanner.Scan()
+				size := scanner.Text()
+				bet(p, size, pot)
+			case "4":
+				raise()
+			case "5":
+				fold(p)
+			default:
+				fmt.Println("Enter the number")
+				continue
+			}
+			if p.Status != "" {
+				break
+			}
 		}
 	}
 	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
+
+	return p.Status
 }
 
 func check(p *Player) {
@@ -61,17 +85,26 @@ func check(p *Player) {
 	fmt.Println("check")
 }
 
-func call() {
+func call(p *Player, pot *int) {
+	p.Bet = *pot - p.Bet
+	*pot += p.Bet
+	p.Status = "check"
 	fmt.Println("call")
-
 }
 
-func bet() {
-	fmt.Println("a")
-
+func bet(p *Player, size string, pot *int) {
+	str, _ := strconv.Atoi(size)
+	*pot += str
+	p.Status = "bet"
+	p.Bet = *pot
+	fmt.Printf("Bet size: %s\n", size)
 }
 
 func raise() {
 	fmt.Println("a")
+}
 
+func fold(p *Player) {
+	p.Status = "fold"
+	fmt.Println("fold")
 }

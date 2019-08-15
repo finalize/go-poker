@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/shgysd/go-poker/pkg/deck"
 	"github.com/shgysd/go-poker/pkg/game"
 )
@@ -19,17 +17,11 @@ func init() {
 }
 
 func main() {
-	fmt.Println("### Welcome to Texas hold 'em ###")
-	next := g.NextRound(deal)
 	for len(g.Players) != 1 {
+		next := g.Next(deal)
 		for g.Round != "Done" {
-			for _, p := range g.Players {
-				p.Action()
-			}
 			next()
-			fmt.Println(g.Round)
 		}
 		g.Players = g.Players[:len(g.Players)-1]
 	}
-	fmt.Println("### Thank you for playing! ###")
 }
